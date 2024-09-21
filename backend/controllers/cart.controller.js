@@ -32,9 +32,7 @@ export const addItem = async (req, res) => {
       cart = new Cart({ user: req.user._id, items: [] });
     }
 
-    const itemIndex = cart.items.findIndex(
-      (item) => item.product == productId
-    );
+    const itemIndex = cart.items.findIndex((item) => item.product == productId);
     console.log(itemIndex, cart.items[itemIndex]);
     if (itemIndex > -1) {
       cart.items[itemIndex].quantity += quantity;
@@ -59,9 +57,9 @@ export const removeItem = async (req, res) => {
     let cart = await Cart.findOne({ user: req.user._id });
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
 
-    cart.items = cart.items.filter((item) => item.product._id !== productId);
+    cart.items = cart.items.filter((item) => item.product != productId);
     await cart.save();
-    res.status(200).json({message:'Item removed'})
+    res.status(200).json({ message: 'Item removed' });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
