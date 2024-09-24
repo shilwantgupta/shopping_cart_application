@@ -1,0 +1,37 @@
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Full height */
+}
+.content {
+  flex: 1;
+}
+.side-link.active {
+  display: block;
+  background-color: #b9b9bb;
+}
+.cart-button {
+  position: relative;
+  background: none;
+  border: none;
+}
+.cart-button .cart-badge {
+  color: #fff;
+  display: block;
+  position: absolute;
+  top: 0px;
+  font-size: 13px;
+  right: -4px;
+  background: #064b8d;
+  width: 21px;
+  height: 21px;
+  border-radius: 25px;
+}
+footer {
+  text-align: center;
+      background: #f1f1f1;
+    padding: 1rem;
+}
