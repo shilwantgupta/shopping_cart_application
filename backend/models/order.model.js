@@ -1,7 +1,12 @@
 import mongoose from 'mongoose';
-
 const OrderSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  orderno: {
+    type: String,
+    unique: true,
+    default: () => Math.random().toString(36).substr(2, 9),
+  }, // Unique random value
+
   items: [
     {
       product: {

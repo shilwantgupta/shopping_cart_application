@@ -44,7 +44,32 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = generateToken(user);
-    res.status(200).json({ token, message: 'Login success' });
+    const userData = user.toObject();
+    delete userData.password;
+    res.status(200).json({
+      data: userData,
+      token,
+      message: 'Login success',
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server error' + error.message });
+  }
+};
+
+export const getUsers = async (req, res) => {
+  try {
+    const cachedUser = await redisClient.get('users');
+    if (cachedUser) {
+      return res.status(200).json({
+        data: JSON.parse(cachedUser),
+        message: 'Users fetched!',
+      });
+    }
+
+    const users = await User.find();
+    redisClient.set('users', JSON.stringify(users)); 
+
+    res.status(200).json({ data: users, message: 'Fetched' });
   } catch (error) {
     res.status(500).json({ message: 'Internal Server error' });
   }

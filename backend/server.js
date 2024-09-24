@@ -10,6 +10,7 @@ dotenv.config();
 import authRoutes from './routes/auth.route';
 import productRoutes from './routes/product.route';
 import cartRoutes from './routes/cart.route';
+import User from './models/user.model';
 
 const app = express();
 
@@ -33,6 +34,23 @@ app.use('/api/cart', cartRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+const createAdminUser = async () => {
+  const adminExists = await User.findOne({
+    email: process.env.ADMIN_EMAIL || 'admin@gmail.com',
+  });
+  if (!adminExists) {
+    const adminUser = new User({
+      name: process.env.ADMIN_NAME || 'admin',
+      email: process.env.ADMIN_EMAIL || 'admin@gmail.com',
+      password: process.env.ADMIN_PASSWORD || 'admin001',
+      isAdmin: true,
+    });
+    await adminUser.save();
+    console.log('Admin user created');
+  }
+};
+
+app.listen(PORT, async () => {
+  await createAdminUser();
   console.log(`Server running on port ${PORT}`);
 });

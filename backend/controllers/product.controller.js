@@ -21,12 +21,12 @@ export const getAllProducts = async (req, res) => {
     if (cachedProducts) {
       return res.status(200).json({
         data: JSON.parse(cachedProducts),
-        message: 'Fetched!',
+        message: 'Products fetched!',
       });
     }
 
     const products = await Product.find({});
-    redisClient.set('products', products);
+    redisClient.set('products', JSON.stringify(products)); // Ensure products are stored as a JSON string
 
     res.status(200).json({ data: products, message: 'Products Fetched!' });
   } catch (error) {
@@ -40,7 +40,7 @@ export const getProductById = async (req, res) => {
     const cachedProduct = await redisClient.get(`product:${id}`);
     if (cachedProduct) {
       return res.status(200).json({
-        data: cachedProduct,
+        data: JSON.parse(cachedProduct),
         message: 'Product fetched',
       });
     }
@@ -48,7 +48,7 @@ export const getProductById = async (req, res) => {
     if (!product)
       return res.status(404).json({ message: 'Product not found.' });
 
-    redisClient.set(`product:${id}`, product);
+    redisClient.set(`product:${id}`, JSON.stringify(product));
     res.status(200).json({ data: product, message: 'Product fetched' });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error.' + error.message });
