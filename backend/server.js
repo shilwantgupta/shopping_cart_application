@@ -10,6 +10,7 @@ dotenv.config();
 import authRoutes from './routes/auth.route';
 import productRoutes from './routes/product.route';
 import cartRoutes from './routes/cart.route';
+import orderRoutes from './routes/order.route'
 import User from './models/user.model';
 
 const app = express();
@@ -31,6 +32,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 const PORT = process.env.PORT || 5000;
 

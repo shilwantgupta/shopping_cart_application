@@ -33,24 +33,58 @@ export const addItem = async (req, res) => {
     }
 
     const itemIndex = cart.items.findIndex((item) => item.product == productId);
-    console.log(itemIndex, cart.items[itemIndex]);
     if (itemIndex > -1) {
-      cart.items[itemIndex].quantity += quantity;
+      cart.items[itemIndex].quantity += Number(quantity);
     } else {
       cart.items.push({ product: productId, quantity });
     }
 
     await cart.save();
+    let cartData = await Cart.findOne({ user: req.user._id }).populate(
+      'items.product'
+    );
 
-    res.status(200).json({
-      data: cart,
+    res.status(201).json({
+      data: cartData,
       message: 'Added to cart.',
     });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+export const updateQuantity = async (req, res) => {
+  const { productId, quantity } = req.body;
+  try {
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
+    if (product.stock < quantity) {
+      return res.status(400).json({ message: 'Insufficient stock' });
+    }
+
+    let cart = await Cart.findOne({ user: req.user._id });
+    if (quantity == 0) {
+      cart.items = cart.items.filter((item) => item.product != productId);
+    }
+
+    const itemIndex = cart.items.findIndex((item) => item.product == productId);
+    if (itemIndex > -1) {
+      cart.items[itemIndex].quantity = Number(quantity);
+    }
+
+    await cart.save();
+    let cartData = await Cart.findOne({ user: req.user._id }).populate(
+      'items.product'
+    );
+
+    res.status(200).json({
+      data: cartData,
+      message: 'Item qunatity updated.',
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 export const removeItem = async (req, res) => {
   const { productId } = req.body;
   try {
@@ -70,37 +104,45 @@ export const cartCheckout = async (req, res) => {
     let cart = await Cart.findOne({ user: req.user._id }).populate(
       'items.product'
     );
-    if (!cart || cart.items.length === 0)
+    if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: 'Cart is empty' });
+    }
 
     // Calculate total with discounts
     const discountEngine = new DiscountEngine(cart.items);
     const { total, discountsApplied } = discountEngine.calculateTotal();
 
-    // Check stock again and update
+    // Check stock and prepare order items
+    const orderItems = [];
     for (let item of cart.items) {
       const product = await Product.findById(item.product._id);
-      if (product.stock < item.quantity)
+      if (!product) {
+        return res.status(404).json({ message: `Product not found` });
+      }
+      if (product.stock < item.quantity) {
         return res
           .status(400)
-          .json({ message: `Insufficient stock for ${product.name}` });
+          .json({ message: `Insufficient stock for ${product.title}` });
+      }
       product.stock -= item.quantity;
+      orderItems.push({
+        product: item.product._id,
+        title: item.product.title,
+        quantity: item.quantity,
+        price: item.product.price,
+      });
       await product.save();
     }
 
     // Create order
     const order = new Order({
       user: req.user._id,
-      items: cart.items.map((item) => ({
-        product: item.product._id,
-        title: item.product.title,
-        quantity: item.quantity,
-        price: item.product.price,
-      })),
+      items: orderItems,
       totalAmount: total,
-      shippingAddress: req.body.shippingAddress, // Assuming shipping address is sent in the request body
-      paymentMethod: req.body.paymentMethod, // Assuming payment method is sent in the request body
+      shippingAddress: req.body.shippingAddress,
+      paymentMethod: req.body.paymentMethod,
     });
+    console.log(order)
     await order.save();
 
     // Clear cart
@@ -108,8 +150,7 @@ export const cartCheckout = async (req, res) => {
     await cart.save();
 
     res.status(200).json({
-      total,
-      discountsApplied,
+      data:cart,
       message: 'Successfully ordered.',
     });
   } catch (error) {

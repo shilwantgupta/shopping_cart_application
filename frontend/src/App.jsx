@@ -29,7 +29,8 @@ const NotFound = lazy(() => import('./components/Error/404'));
 const Forbidden = lazy(() => import('./components/Error/403'));
 
 const Home = lazy(() => import('./components/Home/Home'));
-
+const Shop = lazy(() => import('./components/Product/Products'));
+const Product = lazy(() => import('./components/Product/Product'));
 // Admin components
 const Dashboard = lazy(() => import('./components/Admin/Dashboard'));
 const Products = lazy(() => import('./components/Admin/Product/Products'));
@@ -47,7 +48,8 @@ function App() {
         <div className='content'>
           <Routes>
             <Route path='/' element={<Home />} />
-
+            <Route path='/shop' element={<Shop />} />
+            <Route path='/product/:id' element={<Product />} />
             <Route element={<PublicRoute />}>
               <Route path='/login' element={<Login />} />
               <Route path='/sign-up' element={<Signup />} />
@@ -56,6 +58,7 @@ function App() {
             <Route element={<PrivateRoute />}>
               <Route path='/cart' element={<Cart />} />
               <Route path='/orders' element={<Orders />} />
+
               <Route path='/profile' element={<Profile />} />
             </Route>
 

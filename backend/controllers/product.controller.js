@@ -26,7 +26,7 @@ export const getAllProducts = async (req, res) => {
     }
 
     const products = await Product.find({});
-    redisClient.set('products', JSON.stringify(products)); // Ensure products are stored as a JSON string
+    redisClient.set('products', JSON.stringify(products)); 
 
     res.status(200).json({ data: products, message: 'Products Fetched!' });
   } catch (error) {

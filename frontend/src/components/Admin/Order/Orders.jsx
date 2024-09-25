@@ -6,7 +6,7 @@ const Orders = () => {
   useEffect(() => {
     function getOrders() {
       api
-        .get('/cart/orders')
+        .get('/orders/all')
         .then((res) => {
           const { data } = res.data;
           setOrders(data);
@@ -40,7 +40,7 @@ const Orders = () => {
                   <td>{++index}</td>
                   <td>{order?.user?.name}</td>
                   <td>{order?.orderno}</td>
-                  <td>{order?.totalAmount}</td>
+                  <td>₹{order?.totalAmount}</td>
                   <td>{order?.paymentMethod}</td>
                   <td>
                     {order?.shippingAddress?.street},
@@ -54,7 +54,9 @@ const Orders = () => {
             })
           ) : (
             <tr>
-              <td className='text-center' colspan='7'>No orders</td>
+              <td className='text-center' colspan='7'>
+                No orders
+              </td>
             </tr>
           )}
         </tbody>
