@@ -358,6 +358,8 @@ Backend API for a shopping cart system with user authentication, product managem
   }
   ```
 
-## Notes
-- Ensure to handle errors appropriately in your implementation.
-- Use appropriate HTTP status codes for responses.
+## Acknowledgments
+
+pecial thanks to the developers of the libraries and frameworks used in this project.
+
+For any questions or issues, please feel free to reach out or open an issue in the repository.
