@@ -30,6 +30,11 @@ Backend API for a shopping cart system with user authentication, product managem
    cd shopping-cart-backend
    ```
 
+
+## Config backend
+  ```bash
+  cd backend
+  ```
 ### Create a `.env` file based on `.env.example`
 
 **`.env`**
@@ -54,12 +59,14 @@ Backend API for a shopping cart system with user authentication, product managem
 
 ### Run backend
 ```bash
-  cd backend
+  npm i
   npm start
 ```
+
 ### Run frontend 
 ```bash
   cd frontend
+  npm i
   npm run dev
 ```
 
